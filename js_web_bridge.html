@@ -1,0 +1,36 @@
+<script src="https://thunkable.github.io/webviewer-extension/thunkableWebviewerExtension.js" type="text/javascript"></script>
+<script type="text/javascript">
+  ThunkableWebviewerExtension.receiveMessageWithReturnValue(function(message, callback) {
+    try {
+      // Parse the incoming JSON message from Thunkable
+      const data = JSON.parse(message);
+      let result;
+
+      // Process based on the requested operation
+      if (data.operation === "toUpperCase") {
+        // Convert the input string to uppercase
+        result = data.string.toUpperCase();
+      } else if (data.operation === "wordCount") {
+        // Count words: trim and split by whitespace
+        result = data.string.trim() === "" ? 0 : data.string.trim().split(/\s+/).length;
+      } else if (data.operation === "randomNumber") {
+        // Generate a random number between 'min' and 'max'
+        const min = parseFloat(data.min);
+        const max = parseFloat(data.max);
+        if (isNaN(min) || isNaN(max) || min >= max) {
+          result = "Invalid parameters";
+        } else {
+          result = (Math.random() * (max - min) + min).toFixed(2);
+        }
+      } else {
+        result = "Unknown operation";
+      }
+      
+      // Return the result back to the Thunkable app as a string.
+      callback(String(result));
+    } catch (e) {
+      console.error("Error processing message:", e);
+      callback("Error processing message");
+    }
+  });
+</script>
